@@ -1,5 +1,8 @@
 from math import sqrt
-from shapely import affinity
+
+from shapely          import affinity
+from shapely.geometry import LineString, LinearRing, Point, Polygon, MultiPolygon
+from shapely.ops      import unary_union, orient
 
 GM = (sqrt(5)-1.0)/2.0
 W = 8.0
@@ -63,3 +66,28 @@ def set_limits(ax, x0, xN, y0, yN):
     ax.set_ylim(y0, yN)
     ax.set_yticks(range(y0, yN+1))
     ax.set_aspect("equal")
+
+def generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, resolution=16, tolerance=0.05 ):
+    resultPolygon_s = list()
+
+    for region, distance in zip(region_s, region_distance_s):
+        sourceLinearRing = LinearRing(region)
+        
+        if sourceLinearRing.is_ccw == False :
+            targetLinearRing = sourceLinearRing.parallel_offset(distance, 'left' , join_style=region_join_style)
+        if sourceLinearRing.is_ccw == True :
+            targetLinearRing = sourceLinearRing.parallel_offset(distance, 'right', join_style=region_join_style)
+        
+        resultPolygon_s.append( Polygon(targetLinearRing ) )
+    for line, distance in zip(line_s, line_distance_s, ):
+        sourceLineString = LineString(line)
+        targetLineString = sourceLineString.buffer(distance, resolution=resolution, cap_style=line_cap_style, join_style=line_join_style)
+        resultPolygon_s.append( Polygon(targetLineString ) )
+    
+    unionPolygon = unary_union(resultPolygon_s)
+    simplifiedPolygon = unionPolygon.simplify(tolerance, preserve_topology=True) 
+
+    return simplifiedPolygon
+
+def plotResults():
+    return

@@ -7,9 +7,7 @@ import os
 import numpy as np
 import scipy as sp
 
-from matplotlib       import pyplot
-from shapely.geometry import LineString
-from descartes        import PolygonPatch
+from GEOSService_common import generateArea
 
 from flask      import Flask, request, jsonify
 app = Flask(__name__)
@@ -19,29 +17,37 @@ OUTPUT_DIR = 'output'
 
 @app.route('/api/buffer', methods=['POST'])
 def upload():
-    tolerance = request.json['tolerance']
-    distance  = request.json['distance' ]
-    points    = request.json['points'   ]
-    style     = request.json['style'    ]
+    resolution_ = request.json['resolution']
+    tolerance_  = request.json['tolerance' ]
     
-    print('Hello world!')
+    axis_ = request.json['axis']
     
-    line_   = LineString(points)
-    buffer_ = line_.buffer(distance, cap_style=1, join_style=1)
-    simple_ = buffer_.simplify(tolerance=tolerance)
+    region_s = list()
+    for regions in axis_['regions']:
+        for polygon in regions['polygons']:
+            point_s = [ (float(point['x']),float(point['y'])) for point in polygon ]
+            region_s.append( point_s )
     
-    exterior_points = list()
-    x_s, y_s = simple_.exterior.coords.xy
-    for (x,y) in zip(x_s, y_s):
-        exterior_points.append( (x,y) )
+    line_s   = list()
+    for lines in axis_['lines']:
+        point_s = [ (float(point['x']),float(point['y'])) for point in lines['points'] ]
+        line_s.append( point_s )
+    
+    region_distance_s = [10]*len(region_s) 
+    region_join_style = 2
+    line_distance_s = [10]*len(line_s)
+    line_cap_style = 1
+    line_join_style = 1
+    
+    resultPolygon = generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, resolution_, tolerance_)
+
+    x_s, y_s = resultPolygon.exterior.coords.xy
+    exterior_points = list( zip(x_s, y_s) )
     
     interior_points_s = list()
-    for interior in simple_.interiors:
-        interior_points = list()
+    for interior in resultPolygon.interiors:
         x_s, y_s = interior.coords.xy
-        for (x,y) in zip(x_s, y_s):
-            interior_points.append( (x,y) )
-        interior_points_s.append( interior_points )
+        interior_points_s.append( list( zip(x_s,y_s) )  ) 
     
     return jsonify({'exterior_points':exterior_points, 'interior_points':interior_points_s})
 
