@@ -27,30 +27,30 @@ def plot_line(ax, ob, color=GRAY):
         x, y = part.xy
         ax.plot(x, y, color=color, linewidth=3, solid_capstyle='round', zorder=1)
 
-with open('data/example_2.json') as json_file:
+with open('data/example_5.json') as json_file:
     data = json.load(json_file)
 
+line_cap_style_  = data['cap_style'  ]
+line_join_style_ = data['join_style' ]
+polygon_join_style_ = 2
 
-region_s = list()
-for regions in data['axis']['regions']:
-    for polygon in regions['polygons']:
-        point_s = [ (float(point['x']),float(point['y'])) for point in polygon ]
-        region_s.append( point_s )
-
-line_s   = list()
-for lines in data['axis']['lines']:
-    point_s = [ (float(point['x']),float(point['y'])) for point in lines['points'] ]
-    line_s.append( point_s )
+resolution_ = data['resolution' ]
+tolerance_  = data['tolerance'  ]
+mitre_limit_= data['mitre_limit']
     
-region_distance_s = [10]*len(region_s) 
-region_join_style = 2
-line_distance_s = [10]*len(line_s)
-line_cap_style = 1
-line_join_style = 1
-resolution = 4
-tolerance = 0.05
+polygon_s          = list()
+polygon_distance_s = list()
+for polygon in data['polygons']:
+    polygon_s         .append( polygon['points'  ] )
+    polygon_distance_s.append( polygon['distance'] )
 
-resultPolygon = generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, resolution, tolerance)
+line_s          = list()
+line_distance_s = list()
+for line in data['lines']:
+    line_s         .append( line['points'  ] )
+    line_distance_s.append( line['distance'] )
+
+resultPolygon = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
 
 x_min, y_min, x_max, y_max = resultPolygon.exterior.bounds
 x_length = x_max - x_min
@@ -63,8 +63,8 @@ ax.set_xlim(math.floor(x_min - x_length*0.1), math.ceil(x_max + x_length*0.1))
 ax.set_ylim(math.floor(y_min - y_length*0.1), math.ceil(y_max + y_length*0.1))
 ax.set_aspect("equal")
 
-for region in region_s:
-    sourceLinearRing = LinearRing(region)
+for polygon in polygon_s:
+    sourceLinearRing = LinearRing(polygon)
     x_s, y_s = ( [x for x, y in list (sourceLinearRing.coords)], [y for x, y in list (sourceLinearRing.coords)] )
     
     plot_coords(ax, x_s, y_s        , color=RED )

@@ -17,29 +17,27 @@ OUTPUT_DIR = 'output'
 
 @app.route('/api/buffer', methods=['POST'])
 def upload():
-    resolution_ = request.json['resolution']
-    tolerance_  = request.json['tolerance' ]
+    line_cap_style_  = request.json['cap_style'  ]
+    line_join_style_ = request.json['join_style' ]
+    polygon_join_style_ = 2
+
+    resolution_ = request.json['resolution' ]
+    tolerance_  = request.json['tolerance'  ]
+    mitre_limit_= request.json['mitre_limit']
     
-    axis_ = request.json['axis']
+    polygon_s          = list()
+    polygon_distance_s = list()
+    for polygon in request.json['polygons']:
+        polygon_s         .append( polygon['points'  ] )
+        polygon_distance_s.append( polygon['distance'] )
     
-    region_s = list()
-    for regions in axis_['regions']:
-        for polygon in regions['polygons']:
-            point_s = [ (float(point['x']),float(point['y'])) for point in polygon ]
-            region_s.append( point_s )
+    line_s          = list()
+    line_distance_s = list()
+    for line in request.json['lines']:
+        line_s         .append( polygon['points'  ] )
+        line_distance_s.append( polygon['distance'] )
     
-    line_s   = list()
-    for lines in axis_['lines']:
-        point_s = [ (float(point['x']),float(point['y'])) for point in lines['points'] ]
-        line_s.append( point_s )
-    
-    region_distance_s = [10]*len(region_s) 
-    region_join_style = 2
-    line_distance_s = [10]*len(line_s)
-    line_cap_style = 1
-    line_join_style = 1
-    
-    resultPolygon = generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, resolution_, tolerance_)
+    resultPolygon = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
 
     x_s, y_s = resultPolygon.exterior.coords.xy
     exterior_points = list( zip(x_s, y_s) )

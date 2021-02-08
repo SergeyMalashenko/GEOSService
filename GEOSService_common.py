@@ -67,7 +67,7 @@ def set_limits(ax, x0, xN, y0, yN):
     ax.set_yticks(range(y0, yN+1))
     ax.set_aspect("equal")
 
-def generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, resolution=16, tolerance=0.05 ):
+def generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, mitre_limit=5, resolution=4, tolerance=0.05 ):
     resultPolygon_s = list()
 
     for region, distance in zip(region_s, region_distance_s):
@@ -81,7 +81,7 @@ def generateArea( region_s, region_distance_s, region_join_style, line_s, line_d
         resultPolygon_s.append( Polygon(targetLinearRing ) )
     for line, distance in zip(line_s, line_distance_s, ):
         sourceLineString = LineString(line)
-        targetLineString = sourceLineString.buffer(distance, resolution=resolution, cap_style=line_cap_style, join_style=line_join_style)
+        targetLineString = sourceLineString.buffer(distance, resolution=resolution, cap_style=line_cap_style, join_style=line_join_style, mitre_limit=mitre_limit)
         resultPolygon_s.append( Polygon(targetLineString ) )
     
     unionPolygon = unary_union(resultPolygon_s)
