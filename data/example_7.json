@@ -26,9 +26,9 @@
        "distance":10
      }
    ],
-   "cap_style"  : 1,
+   "cap_style"  : 3,
    "join_style" : 2,
-   "mitre_limit": 1.0,
-   "tolerance"  : 0.01,
+   "mitre_limit": 2.0,
+   "tolerance"  : 0.1,
    "resolution" : 3
 }

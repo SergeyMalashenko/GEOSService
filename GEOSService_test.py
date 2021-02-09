@@ -81,6 +81,8 @@ for line in line_s:
 x_s, y_s = ( [x for x, y in list (resultPolygon.exterior.coords)], [y for x, y in list (resultPolygon.exterior.coords)] ) 
 plot_coords(ax, x_s, y_s, color=BLUE)
 
+print( list(zip(x_s,y_s)) )
+
 patch2b = PolygonPatch(resultPolygon, fc=BLUE, ec=BLUE, alpha=0.5, zorder=2)
 ax.add_patch(patch2b)
 

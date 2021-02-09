@@ -27,14 +27,14 @@ def upload():
     
     polygon_s          = list()
     polygon_distance_s = list()
-    if 'polygons' in data:
+    if 'polygons' in request.json:
         for polygon in request.json['polygons']:
             polygon_s         .append( polygon['points'  ] )
             polygon_distance_s.append( polygon['distance'] )
     
     line_s          = list()
     line_distance_s = list()
-    if 'lines' in data:
+    if 'lines' in request.json:
         for line in request.json['lines']:
             line_s         .append( polygon['points'  ] )
             line_distance_s.append( polygon['distance'] )

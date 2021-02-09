@@ -85,7 +85,7 @@ def generateArea( region_s, region_distance_s, region_join_style, line_s, line_d
         resultPolygon_s.append( Polygon(targetLineString ) )
     
     unionPolygon = unary_union(resultPolygon_s)
-    simplifiedPolygon = unionPolygon.simplify(tolerance, preserve_topology=True) 
+    simplifiedPolygon = unionPolygon.simplify(tolerance, preserve_topology=False) 
 
     return simplifiedPolygon
 
