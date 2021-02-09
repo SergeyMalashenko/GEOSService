@@ -27,15 +27,17 @@ def upload():
     
     polygon_s          = list()
     polygon_distance_s = list()
-    for polygon in request.json['polygons']:
-        polygon_s         .append( polygon['points'  ] )
-        polygon_distance_s.append( polygon['distance'] )
+    if 'polygons' in data:
+        for polygon in request.json['polygons']:
+            polygon_s         .append( polygon['points'  ] )
+            polygon_distance_s.append( polygon['distance'] )
     
     line_s          = list()
     line_distance_s = list()
-    for line in request.json['lines']:
-        line_s         .append( polygon['points'  ] )
-        line_distance_s.append( polygon['distance'] )
+    if 'lines' in data:
+        for line in request.json['lines']:
+            line_s         .append( polygon['points'  ] )
+            line_distance_s.append( polygon['distance'] )
     
     resultPolygon = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
 

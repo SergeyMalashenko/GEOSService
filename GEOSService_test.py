@@ -27,7 +27,7 @@ def plot_line(ax, ob, color=GRAY):
         x, y = part.xy
         ax.plot(x, y, color=color, linewidth=3, solid_capstyle='round', zorder=1)
 
-with open('data/example_5.json') as json_file:
+with open('data/example_7.json') as json_file:
     data = json.load(json_file)
 
 line_cap_style_  = data['cap_style'  ]
@@ -40,15 +40,17 @@ mitre_limit_= data['mitre_limit']
     
 polygon_s          = list()
 polygon_distance_s = list()
-for polygon in data['polygons']:
-    polygon_s         .append( polygon['points'  ] )
-    polygon_distance_s.append( polygon['distance'] )
+if 'polygons' in data:
+    for polygon in data['polygons']:
+        polygon_s         .append( polygon['points'  ] )
+        polygon_distance_s.append( polygon['distance'] )
 
 line_s          = list()
 line_distance_s = list()
-for line in data['lines']:
-    line_s         .append( line['points'  ] )
-    line_distance_s.append( line['distance'] )
+if 'lines' in data:
+    for line in data['lines']:
+        line_s         .append( line['points'  ] )
+        line_distance_s.append( line['distance'] )
 
 resultPolygon = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
 
@@ -82,6 +84,8 @@ plot_coords(ax, x_s, y_s, color=BLUE)
 patch2b = PolygonPatch(resultPolygon, fc=BLUE, ec=BLUE, alpha=0.5, zorder=2)
 ax.add_patch(patch2b)
 
+ax.set_title(f'cap_style={line_cap_style_}, join_style={line_join_style_}, mitre_limit={mitre_limit_}')
+ 
 ax.set_yticklabels([])
 ax.set_xticklabels([])
 pyplot.show()

@@ -74,9 +74,9 @@ def generateArea( region_s, region_distance_s, region_join_style, line_s, line_d
         sourceLinearRing = LinearRing(region)
         
         if sourceLinearRing.is_ccw == False :
-            targetLinearRing = sourceLinearRing.parallel_offset(distance, 'left' , join_style=region_join_style)
+            targetLinearRing = sourceLinearRing.parallel_offset(distance, 'left' , resolution=resolution, join_style=region_join_style, mitre_limit=mitre_limit)
         if sourceLinearRing.is_ccw == True :
-            targetLinearRing = sourceLinearRing.parallel_offset(distance, 'right', join_style=region_join_style)
+            targetLinearRing = sourceLinearRing.parallel_offset(distance, 'right', resolution=resolution, join_style=region_join_style, mitre_limit=mitre_limit)
         
         resultPolygon_s.append( Polygon(targetLinearRing ) )
     for line, distance in zip(line_s, line_distance_s, ):
