@@ -27,7 +27,7 @@ def plot_line(ax, ob, color=GRAY):
         x, y = part.xy
         ax.plot(x, y, color=color, linewidth=3, solid_capstyle='round', zorder=1)
 
-with open('data/example_7.json') as json_file:
+with open('data/example_8.json') as json_file:
     data = json.load(json_file)
 
 line_cap_style_  = data['cap_style'  ]
@@ -52,14 +52,13 @@ if 'lines' in data:
         line_s         .append( line['points'  ] )
         line_distance_s.append( line['distance'] )
 
-resultPolygon = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
+resultPolygon_s = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
 
-x_min, y_min, x_max, y_max = resultPolygon.exterior.bounds
+x_min, y_min, x_max, y_max = resultPolygon_s.bounds
 x_length = x_max - x_min
 y_length = y_max - y_min
 
 #Plot results
-
 fig, ax = pyplot.subplots(1, figsize=(2*SIZE[0], 2 * SIZE[1]), dpi=90)
 ax.set_xlim(math.floor(x_min - x_length*0.1), math.ceil(x_max + x_length*0.1))
 ax.set_ylim(math.floor(y_min - y_length*0.1), math.ceil(y_max + y_length*0.1))
@@ -78,13 +77,14 @@ for line in line_s:
     plot_coords(ax, x_s, y_s        , color=GREEN)
     plot_line  (ax, sourceLineString, color=GREEN)
 
-x_s, y_s = ( [x for x, y in list (resultPolygon.exterior.coords)], [y for x, y in list (resultPolygon.exterior.coords)] ) 
-plot_coords(ax, x_s, y_s, color=BLUE)
-
-print( list(zip(x_s,y_s)) )
-
-patch2b = PolygonPatch(resultPolygon, fc=BLUE, ec=BLUE, alpha=0.5, zorder=2)
-ax.add_patch(patch2b)
+for resultPolygon in resultPolygon_s:
+    x_s, y_s = ( [x for x, y in list (resultPolygon.exterior.coords)], [y for x, y in list (resultPolygon.exterior.coords)] ) 
+    plot_coords(ax, x_s, y_s, color=BLUE)
+    
+    print( list(zip(x_s,y_s)) )
+        
+    patch2b = PolygonPatch(resultPolygon, fc=BLUE, ec=BLUE, alpha=0.5, zorder=2)
+    ax.add_patch(patch2b)
 
 ax.set_title(f'cap_style={line_cap_style_}, join_style={line_join_style_}, mitre_limit={mitre_limit_}')
  

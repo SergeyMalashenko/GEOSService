@@ -84,10 +84,13 @@ def generateArea( region_s, region_distance_s, region_join_style, line_s, line_d
         targetLineString = sourceLineString.buffer(distance, resolution=resolution, cap_style=line_cap_style, join_style=line_join_style, mitre_limit=mitre_limit)
         resultPolygon_s.append( Polygon(targetLineString ) )
     
-    unionPolygon = unary_union(resultPolygon_s)
-    simplifiedPolygon = unionPolygon.simplify(tolerance, preserve_topology=False) 
-
-    return simplifiedPolygon
+    unionPolygon_s = unary_union(resultPolygon_s)
+    simplifiedPolygon_s = unionPolygon_s.simplify(tolerance, preserve_topology=False) 
+    
+    if simplifiedPolygon_s.geom_type == 'Polygon':
+        simplifiedPolygon_s = MultiPolygon([simplifiedPolygon_s])
+    
+    return simplifiedPolygon_s
 
 def plotResults():
     return
