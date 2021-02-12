@@ -72,12 +72,16 @@ def generateArea( region_s, region_distance_s, region_join_style, line_s, line_d
 
     for region, distance in zip(region_s, region_distance_s):
         sourceLinearRing = LinearRing(region)
-        
+        sourcePolygon    = Polygon   (region)
+        """ 
         if sourceLinearRing.is_ccw == False :
             targetLinearRing = sourceLinearRing.parallel_offset(distance, 'left' , resolution=resolution, join_style=region_join_style, mitre_limit=mitre_limit)
         if sourceLinearRing.is_ccw == True :
             targetLinearRing = sourceLinearRing.parallel_offset(distance, 'right', resolution=resolution, join_style=region_join_style, mitre_limit=mitre_limit)
-        
+        """
+        targetLinearRing = sourcePolygon.buffer(distance, resolution=resolution, cap_style=1, join_style=region_join_style, mitre_limit=mitre_limit).exterior
+
+
         resultPolygon_s.append( Polygon(targetLinearRing ) )
     for line, distance in zip(line_s, line_distance_s, ):
         sourceLineString = LineString(line)
@@ -90,7 +94,7 @@ def generateArea( region_s, region_distance_s, region_join_style, line_s, line_d
     if simplifiedPolygon_s.geom_type == 'Polygon':
         simplifiedPolygon_s = MultiPolygon([simplifiedPolygon_s])
     
-    return simplifiedPolygon_s
+    return simplifiedPolygon_s, resultPolygon_s
 
 def plotResults():
     return
