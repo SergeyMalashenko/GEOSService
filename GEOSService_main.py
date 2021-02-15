@@ -39,10 +39,11 @@ def upload():
             line_s         .append( line['points'  ] )
             line_distance_s.append( line['distance'] )
     
-    resultPolygon_s = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
+    resultPolygon_s, basePolygon_s = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
    
     resultPoints_s = list()
     for resultPolygon in resultPolygon_s:
+        print( resultPolygon )
         x_s, y_s = resultPolygon.exterior.coords.xy
         exterior_points = list( zip(x_s, y_s) )
         

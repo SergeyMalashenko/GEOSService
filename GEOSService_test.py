@@ -27,7 +27,7 @@ def plot_line(ax, ob, color=GRAY):
         x, y = part.xy
         ax.plot(x, y, color=color, linewidth=3, solid_capstyle='round', zorder=1)
 
-with open('data/example_9.json') as json_file:
+with open('data/example_12.json') as json_file:
     data = json.load(json_file)
 
 line_cap_style_  = data['cap_style'  ]
@@ -84,7 +84,7 @@ for resultPolygon in resultPolygon_s:
     patch2b = PolygonPatch(resultPolygon, fc=BLUE, ec=BLUE, alpha=0.5, zorder=2)
     ax.add_patch(patch2b)
 
-ax.set_title(f'cap_style={line_cap_style_}, join_style={line_join_style_}, mitre_limit={mitre_limit_}')
+ax.set_title(f'cap_style={line_cap_style_}, join_style={line_join_style_}, mitre_limit={mitre_limit_}, resolution={resolution_}, tolerance={tolerance_}')
  
 ax.set_yticklabels([])
 ax.set_xticklabels([])
