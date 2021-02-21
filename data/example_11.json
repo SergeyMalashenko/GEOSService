@@ -1,8 +1,8 @@
 {
     "cap_style": 2,
-    "tolerance": 1,
+    "tolerance": 0.05,
     "join_style": 2,
-    "resolution": 2,
+    "resolution": 3,
     "mitre_limit": 3,
     "lines": [
         {

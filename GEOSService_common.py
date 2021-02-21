@@ -1,8 +1,12 @@
-from math import sqrt
-
-from shapely          import affinity
 from shapely.geometry import LineString, LinearRing, Point, Polygon, MultiPolygon
 from shapely.ops      import unary_union, orient
+from shapely          import affinity
+
+from math import sqrt
+
+import numpy as np
+
+from numpy.linalg import norm
 
 GM = (sqrt(5)-1.0)/2.0
 W = 8.0
@@ -66,6 +70,38 @@ def set_limits(ax, x0, xN, y0, yN):
     ax.set_ylim(y0, yN)
     ax.set_yticks(range(y0, yN+1))
     ax.set_aspect("equal")
+
+def calculatePolygonNormals( inputPolygon_s ):
+    def calculateNormals( point_s_list ):
+        point_s_numpy  = np.array( point_s_list )
+        
+        normal_s_numpy_rht = np.roll(point_s_numpy, 1, axis=0) - point_s_numpy
+        normal_s_numpy_lft = np.roll(point_s_numpy,-1, axis=0) - point_s_numpy
+        
+        normal_s_numpy_rht = np.roll(normal_s_numpy_rht, 1, axis=1)*np.array([[1,-1]])
+        normal_s_numpy_lft = np.roll(normal_s_numpy_lft, 1, axis=1)*np.array([[-1,1]])
+        normal_s_numpy = normal_s_numpy_rht / norm(normal_s_numpy_rht, axis=1, keepdims=True) + normal_s_numpy_lft / norm(normal_s_numpy_lft, axis=1, keepdims=True)
+        normal_s_numpy = normal_s_numpy / norm(normal_s_numpy, axis=1, keepdims=True)
+        
+        return normal_s_numpy.tolist()
+
+    outputPolygon_s = list()
+    for inputPolygon in inputPolygon_s:
+        #Process external points
+        externalPoint_s   = list (inputPolygon.exterior.coords)
+        externalPoint_s.pop()
+        
+        externalNormal_s = calculateNormals( externalPoint_s )
+        
+        internalNormal_s_s = list()
+        for interior in inputPolygon.interiors:
+            internalPoint_s = list (interior.coords)
+            internalPoint_s.pop()
+            
+            internalNormal_s_s.append( calculateNormals(internalPoint_s) )
+        outputPolygon_s.append( Polygon( externalNormal_s, holes=internalNormal_s_s ) )
+    return MultiPolygon( outputPolygon_s  ) 
+
 
 def generateArea( region_s, region_distance_s, region_join_style, line_s, line_distance_s, line_cap_style, line_join_style, mitre_limit=5, resolution=4, tolerance=0.05 ):
     resultPolygon_s = list()

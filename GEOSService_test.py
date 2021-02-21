@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import shapely
 import json  
 import math
 
@@ -7,6 +8,7 @@ import numpy as np
 import scipy as sp
 
 from matplotlib       import pyplot
+
 from shapely.geometry import LineString, LinearRing, Point, Polygon, MultiPolygon
 from shapely.ops      import unary_union, orient
 from descartes        import PolygonPatch
@@ -14,7 +16,9 @@ from descartes        import PolygonPatch
 from GEOSService_common import SIZE, BLUE, GRAY, GREEN, RED, set_limits 
 from GEOSService_common import plot_line, plot_coords
 
-from GEOSService_common import generateArea
+from GEOSService_common import generateArea, calculatePolygonNormals
+
+print( shapely.__file__ )
 
 def plot_coords(ax, x_s, y_s, color='#999999', zorder=1):
     ax.plot(x_s, y_s, 'o', color=color, zorder=zorder)
@@ -27,7 +31,7 @@ def plot_line(ax, ob, color=GRAY):
         x, y = part.xy
         ax.plot(x, y, color=color, linewidth=3, solid_capstyle='round', zorder=1)
 
-with open('data/example_12.json') as json_file:
+with open('data/example_5.json') as json_file:
     data = json.load(json_file)
 
 line_cap_style_  = data['cap_style'  ]
@@ -53,6 +57,8 @@ if 'lines' in data:
         line_distance_s.append( line['distance'] )
 
 resultPolygon_s, basePolygon_s = generateArea( polygon_s, polygon_distance_s, polygon_join_style_, line_s, line_distance_s, line_cap_style_, line_join_style_, mitre_limit_, resolution_, tolerance_)
+resultNormals_s = calculatePolygonNormals( resultPolygon_s )
+baseNormals_s   = calculatePolygonNormals( basePolygon_s   )
 
 x_min, y_min, x_max, y_max = resultPolygon_s.bounds
 x_length = x_max - x_min
@@ -83,6 +89,12 @@ for resultPolygon in resultPolygon_s:
     
     patch2b = PolygonPatch(resultPolygon, fc=BLUE, ec=BLUE, alpha=0.5, zorder=2)
     ax.add_patch(patch2b)
+
+#Plot normal_s
+for resultPolygon, resultNormals in zip(resultPolygon_s, resultNormals_s):
+    xy_s = np.array([[x,y] for x, y in list (resultPolygon.exterior.coords)])
+    n_s  = np.array([[x,y] for x, y in list (resultNormals.exterior.coords)])
+    pyplot.quiver(xy_s[:,0], xy_s[:,1], n_s[:,0], n_s[:,1], angles='xy', scale_units='xy', scale=1./10)    
 
 ax.set_title(f'cap_style={line_cap_style_}, join_style={line_join_style_}, mitre_limit={mitre_limit_}, resolution={resolution_}, tolerance={tolerance_}')
  
