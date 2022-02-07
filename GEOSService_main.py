@@ -61,6 +61,7 @@ def upload():
         resultPoints_s.append( {
             'exterior_points':exterior_points, 'interior_points':interior_points_s,
             'exterior_normals':exterior_normals,'interior_normals':interior_normals_s,
+            'area':resultPolygon.area
         } )
     return jsonify(resultPoints_s)
 
